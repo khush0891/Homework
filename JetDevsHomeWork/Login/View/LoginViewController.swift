@@ -81,15 +81,14 @@ class LoginViewController: UIViewController,UITextFieldDelegate {
                     self.bindData()
                     return
                 }
-        
     }
-    
     
     func bindData() {
          loginViewModel.credentialsInputEmailErrorMessage.bind { [weak self] in
              self!.emailTextField.leadingAssistiveLabel.text = $0
              self!.emailTextField.setLeadingAssistiveLabelColor(UIColor.red, for: .normal)
              self!.emailTextField.setLeadingAssistiveLabelColor(UIColor.red, for: .editing)
+             
          }
         
         loginViewModel.credentialsInputPasswordErrorMessage.bind { [weak self] in
