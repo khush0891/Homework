@@ -43,7 +43,7 @@ class AccountViewController: UIViewController, DelegateProtocol {
             self.nameLabel.text = objLoginMapper.data?.user?.username
             
             
-            var createdat: String = (objLoginMapper.data?.user?.createdat)!
+            let createdat: String = (objLoginMapper.data?.user?.createdat)!
             let createdatArr = createdat.components(separatedBy: "T")
             let previousdate = createdatArr[0]
             let numberOfDays = differenceOfDates(startDate: previousdate)

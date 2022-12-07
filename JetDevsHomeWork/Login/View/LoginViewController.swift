@@ -136,7 +136,7 @@ extension LoginViewController: UITextFieldDelegate {
             self.btnLogIn.backgroundColor = UIColor.blue
             self.btnLogIn.titleLabel?.text = "LogIn"
             self.btnLogIn.titleLabel?.textColor = UIColor.white
-        }else {
+        }else if self.emailTextField.text!.count < 1 && self.passwordTextField.text!.count < 1  {
             self.btnLogIn.backgroundColor = UIColor.lightGray
             self.btnLogIn.titleLabel?.text = "LogIn"
             self.btnLogIn.titleLabel?.textColor = UIColor.white
