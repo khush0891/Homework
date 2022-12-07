@@ -8,13 +8,20 @@
 import UIKit
 import Kingfisher
 
-class AccountViewController: UIViewController {
+
+protocol DelegateProtocol{
+    func popViewController(loggedIn: Bool, objLoginMapper: LoginMapperModel)
+}
+
+
+class AccountViewController: UIViewController, DelegateProtocol {
 
 	@IBOutlet weak var nonLoginView: UIView!
 	@IBOutlet weak var loginView: UIView!
 	@IBOutlet weak var daysLabel: UILabel!
 	@IBOutlet weak var nameLabel: UILabel!
 	@IBOutlet weak var headImageView: UIImageView!
+        
 	override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -22,10 +29,34 @@ class AccountViewController: UIViewController {
         // Do any additional setup after loading the view.
 		nonLoginView.isHidden = false
 		loginView.isHidden = true
+        
+        
     }
 	
+    
+    
+    func popViewController(loggedIn: Bool, objLoginMapper: LoginMapperModel){
+        if loggedIn == true {
+            nonLoginView.isHidden = true
+            loginView.isHidden = false
+            
+            self.nameLabel.text = objLoginMapper.data?.user?.username
+            
+            
+            var createdat: String = (objLoginMapper.data?.user?.createdat)!
+            let createdatArr = createdat.components(separatedBy: "T")
+            let previousdate = createdatArr[0]
+            let numberOfDays = differenceOfDates(startDate: previousdate)
+            
+            self.daysLabel.text = "Created  \(numberOfDays) days ago"
+            
+        }
+
+    }
+    
 	@IBAction func loginButtonTap(_ sender: UIButton) {
         let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "LoginViewController") as? LoginViewController
+        vc!.delegate = self
         self.navigationController?.pushViewController(vc!, animated: true)
 	}
 	

@@ -11,7 +11,7 @@ import MaterialComponents.MaterialTextControls_OutlinedTextFields
 
 /* View/ViewController display visual elements and controls on the screen such as buttons, labels, images, text fields etc..*/
 
-class LoginViewController: UIViewController,UITextFieldDelegate {
+class LoginViewController: UIViewController {
     
     // MARK: - Outlets
     
@@ -19,9 +19,14 @@ class LoginViewController: UIViewController,UITextFieldDelegate {
     @IBOutlet weak var emailTextField: MDCOutlinedTextField!
     @IBOutlet weak var passwordTextField: MDCOutlinedTextField!
     
+    
+    var delegate : DelegateProtocol?
+
     lazy var loginViewModel = {
         LoginViewModel()
     }()
+    
+    var objLoginMapper = LoginMapperModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -76,7 +81,20 @@ class LoginViewController: UIViewController,UITextFieldDelegate {
         //Here we check user's credentials input - if it's correct we call login()
                 switch loginViewModel.credentialsInput() {
                 case .correct:
-                    loginViewModel.login()
+                    loginViewModel.login { [self] objMapper in
+                        
+                        self.objLoginMapper = objMapper!
+                        if self.objLoginMapper.errorMessage != nil && self.objLoginMapper.errorMessage!.count > 1{
+                            
+                            setAlerts(vc: self, strTitle: "Error", strMessage: self.objLoginMapper.errorMessage!)
+                        }else{
+                            if let delegate = delegate{
+                                      delegate.popViewController(loggedIn: true, objLoginMapper: self.objLoginMapper)
+                                 }
+                            self.navigationController?.popViewController(animated: true)
+                        }
+
+                    }
                 case .incorrect:
                     self.bindData()
                     return
@@ -97,25 +115,32 @@ class LoginViewController: UIViewController,UITextFieldDelegate {
             self!.passwordTextField.setLeadingAssistiveLabelColor(UIColor.red, for: .editing)
 
         }
-         
-//         loginViewModel.isUsernameTextFieldHighLighted.bind { [weak self] in
-//             if $0 { self?.emailTextField.highlightTextField()}
-//
-//         }
-//
-//         loginViewModel.isPasswordTextFieldHighLighted.bind { [weak self] in
-//             if $0 { self?.passwordTextField.highlightTextField()}
-//
-//         }
         
      }
-    
-    
-    
+
+}
+
+
+extension LoginViewController: UITextFieldDelegate {
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         self.emailTextField.leadingAssistiveLabel.text = ""
         self.passwordTextField.leadingAssistiveLabel.text = ""
+        
+       
     }
     
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        
+        if self.emailTextField.text!.count > 1 && self.passwordTextField.text!.count > 1  {
+            self.btnLogIn.backgroundColor = UIColor.blue
+            self.btnLogIn.titleLabel?.text = "LogIn"
+            self.btnLogIn.titleLabel?.textColor = UIColor.white
+        }else {
+            self.btnLogIn.backgroundColor = UIColor.lightGray
+            self.btnLogIn.titleLabel?.text = "LogIn"
+            self.btnLogIn.titleLabel?.textColor = UIColor.white
+        }
+        return true
+    }
 }

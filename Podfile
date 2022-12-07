@@ -14,7 +14,6 @@ target 'JetDevsHomeWork' do
   pod 'MaterialComponents/TextControls+OutlinedTextFields'
   pod 'Alamofire'
   pod 'ObjectMapper'
-
   
   target 'JetDevsHomeWorkTests' do
     inherit! :search_paths

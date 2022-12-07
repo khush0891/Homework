@@ -52,9 +52,11 @@ class LoginMapperModel : Mappable {
 
 class UserMapperModel : Mappable {
     
+    var user : UserMapperModel?
     var userid : Int?
     var username : String?
     var userprofileurl : String?
+    var createdat : String?
 
 
     required init?(map: Map) {
@@ -66,10 +68,11 @@ class UserMapperModel : Mappable {
     }
 
     func mapping(map: Map) {
-
+        user <- map["user"]
         userid <- map["user_id"]
         username <- map["user_name"]
         userprofileurl <- map["user_profile_url"]
+        createdat <- map["created_at"]
 
     }
     

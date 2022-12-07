@@ -8,11 +8,16 @@
 import Foundation
 import UIKit
 
+
+
+
 /* ViewModel responsible for presentation logic, in other words transform model information into values that can be displayed on a view and serves as a bridge between the model and view.*/
 
 class LoginViewModel: NSObject {
         
     private var loginService: ServiceProtocol
+    var objLoginMapper = LoginMapperModel()
+
 
     var loginData = LoginModel(){
         didSet {
@@ -35,35 +40,36 @@ class LoginViewModel: NSObject {
         self.loginService = loginService
     }
     
-        //Here we update our model
-        func updateCredentials(emailId: String, password: String, otp: String? = nil) {
-            loginData.emailId = emailId
-            self.emailId = emailId
-            self.password = password
-            loginData.password = password
-        }
-        
-    func login() {
-        let param: [String: Any] = ["email_id":self.emailId,
-                                                   "password":self.password]
-        self.loginService.userLoginWithCredentials(param: param) { objResponse in
-            
-        }
-        
+    //Here we update our model
+    func updateCredentials(emailId: String, password: String, otp: String? = nil) {
+        loginData.emailId = emailId
+        self.emailId = emailId
+        self.password = password
+        loginData.password = password
     }
+        
+    
+    
+    func login(completion: @escaping (LoginMapperModel?) -> ()) {
+        let param: [String: String] = ["email":self.emailId,
+                                                   "password":self.password]
+        
+        self.loginService.userLoginWithCredentials(param: param) { objResponse, errorString in
+            print(objResponse)
+            if objResponse != nil {
+                self.objLoginMapper = objResponse!
+            }
+            completion(self.objLoginMapper)
+        }
+    }
+    
     
     
     func credentialsInput() -> CredentialsInputStatus {
         
-        
         credentialsInputPasswordErrorMessage.value = ""
         credentialsInputEmailErrorMessage.value = ""
 
-//           if emailId.isEmpty && password.isEmpty {
-//               credentialsInputEmailErrorMessage.value = "Please provide your email id."
-//               credentialsInputPasswordErrorMessage.value = "Please provide your password."
-//               return .incorrect
-//           }
            if emailId.isEmpty {
                credentialsInputEmailErrorMessage.value = "Please enter you email id."
                isUsernameTextFieldHighLighted.value = true
@@ -83,7 +89,7 @@ class LoginViewModel: NSObject {
            }
         
         if self.isValidPassword(password) == false {
-            credentialsInputEmailErrorMessage.value = "Passwords require atleast 1 uppercase, 1 lower case, 1 special character and a number."
+            credentialsInputPasswordErrorMessage.value = "Passwords require atleast 1 uppercase, 1 lower case, 1 special character and a number."
             isPasswordTextFieldHighLighted.value = true
             return .incorrect
         }
@@ -101,7 +107,7 @@ class LoginViewModel: NSObject {
     }
     
     func isValidPassword(_ passStr:String) -> Bool {
-        let urlRegEx = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z]))"
+        let urlRegEx = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{6,}$"
         return NSPredicate(format: "SELF MATCHES %@", urlRegEx).evaluate(with: passStr)
     }
     
